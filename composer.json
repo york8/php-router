@@ -1,0 +1,29 @@
+{
+  "name": "york8/router",
+  "description": "一个简单的基于 PSR 7 的 PHP 路由器，良好的分层和扩展结构",
+  "homepage": "https://github.com/york8/php-router",
+  "type": "library",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "York",
+      "email": "lianyupeng1988@126.com"
+    }
+  ],
+  "keywords": [
+    "route",
+    "router",
+    "routing",
+    "psr-7"
+  ],
+  "autoload": {
+    "psr-4": {
+      "York8\\Router\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.0.0",
+    "psr/http-message": "~1.0"
+  }
+}
