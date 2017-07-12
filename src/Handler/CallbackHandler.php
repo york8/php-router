@@ -4,10 +4,11 @@
  * Date: 2017-07-10 15:27
  */
 
-namespace York8\Router;
+namespace York8\Router\Handler;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use York8\Router\HandlerInterface;
 
 class CallbackHandler implements HandlerInterface
 {

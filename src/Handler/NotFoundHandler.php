@@ -12,12 +12,22 @@ use York8\Router\HandlerInterface;
 
 class NotFoundHandler implements HandlerInterface
 {
+    private $msg = '';
+
+    public function __construct($msg = '')
+    {
+        if (empty($msg)) {
+            $msg = 'Not Found';
+        }
+        $this->msg = $msg;
+    }
+
     /** {@inheritdoc} */
     public function handle(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $response = $response->withStatus(404);
         $body = $response->getBody();
-        $body->write($response->getReasonPhrase());
+        $body->write($this->msg);
         return $response;
     }
 
