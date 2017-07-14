@@ -6,9 +6,9 @@
 
 namespace York8\Router\Matcher;
 
+use Psr\Http\Message\RequestInterface;
 use York8\Router\MatcherInterface;
 use York8\Router\MatcherTrait;
-use Psr\Http\Message\RequestInterface;
 
 /**
  * 请求路径匹配器
@@ -50,7 +50,7 @@ class PathMatcher implements MatcherInterface
         $path = $request->getUri()->getPath();
         foreach ($this->paths as $ind => $p) {
             if (!isset($this->patterns[$ind])) {
-                $this->patterns[$ind] = new PathPattern($p, $this->isCaseSensitive ? '' : 'i');
+                $this->patterns[$ind] = new PathPattern($this->prefix . $p, $this->isCaseSensitive ? '' : 'i');
             }
             $pattern = $this->patterns[$ind];
             if ($pattern->match($path, $attrs)) {
