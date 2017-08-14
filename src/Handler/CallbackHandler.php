@@ -15,6 +15,10 @@ class CallbackHandler implements HandlerInterface
     /** @var callable */
     private $func;
 
+    /**
+     * CallbackHandler constructor.
+     * @param callable $func function (RequestInterface $request, ResponseInterface $response)
+     */
     public function __construct(callable $func)
     {
         $this->func = $func;
