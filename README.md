@@ -1,5 +1,10 @@
 # PHP-Router
 
+[![Latest Stable Version](https://poser.pugx.org/york8/router/v/stable)](https://packagist.org/packages/york8/router) 
+[![Total Downloads](https://poser.pugx.org/york8/router/downloads)](https://packagist.org/packages/york8/router) 
+[![Latest Unstable Version](https://poser.pugx.org/york8/router/v/unstable)](https://packagist.org/packages/york8/router) 
+[![License](https://poser.pugx.org/york8/router/license)](https://packagist.org/packages/york8/router)
+
 一个简单的基于 [PSR 7](http://www.php-fig.org/psr/psr-7/) 的 PHP 路由器，良好的分层和扩展结构
 
 * 基于 [PSR 7](http://www.php-fig.org/psr/psr-7/) HTTP 消息接口
