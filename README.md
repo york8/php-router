@@ -15,6 +15,11 @@
 
 - [York](https://github.com/york8)
 
+### Easy to install with composer
+```sh
+$ composer require york8/router
+```
+
 ### Usage
 
 #### How to use：
