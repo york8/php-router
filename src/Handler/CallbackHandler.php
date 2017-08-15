@@ -10,6 +10,11 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use York8\Router\HandlerInterface;
 
+/**
+ * Class CallbackHandler
+ * 回调处理器，构造函数接收一个回调函数，用户可以简单直接的使用这个类来创建处理器而不需要实现 HandlerInterface 接口
+ * @package York8\Router\Handler
+ */
 class CallbackHandler implements HandlerInterface
 {
     /** @var callable */

@@ -30,11 +30,11 @@ class Ruler implements RulerInterface
     private $isCaseSensitive;
 
     /**
-     * @param string[] $paths
-     * @param string $prefix
-     * @param string[] $methods
-     * @param string[] $hosts
-     * @param bool $isCaseSensitive
+     * @param string[] $paths 路径模式集合
+     * @param string $prefix 路径前缀
+     * @param string[] $methods 请求方法集合
+     * @param string[] $hosts 请求 host 集合
+     * @param bool $isCaseSensitive 路径匹配是否区分大小写，默认 false，即忽略大小写
      */
     public function __construct(array $paths, $prefix = null, array $methods = [], array $hosts = [], $isCaseSensitive = false)
     {

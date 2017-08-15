@@ -16,7 +16,7 @@ interface RulerInterface
 {
     /**
      * 添加匹配器
-     * @param MatcherInterface $matcher
+     * @param MatcherInterface $matcher 匹配器
      * @return RulerInterface
      */
     public function addMatcher(MatcherInterface $matcher): RulerInterface;
