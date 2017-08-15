@@ -10,6 +10,11 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use York8\Router\HandlerInterface;
 
+/**
+ * Class NotFoundHandler
+ * 路由失败时返回的默认处理器
+ * @package York8\Router\Handler
+ */
 class NotFoundHandler implements HandlerInterface
 {
     private $msg = '';
