@@ -89,28 +89,41 @@ class PathPattern
             return $this->pattern;
         }
 
-        $pattern = '#(:\w*)?\(([^\(\)]*)\)#';
+        $pattern = '#(:\w+\([^()]*\))|(:\w+)|(\([^()]*\))#';
         $matched = preg_split($pattern, $this->pathPattern, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $parts = [];
-        $attrs = [];
-        $length = count($matched);
-        for ($i = 0; $i < $length; $i++) {
-            $p = $matched[$i];
-            if ($p === '') {
-                continue;
-            } else if ($p[0] === ':') {
-                $attrs[] = substr($p, 1);
-                $reg = $matched[++$i];
-                if (empty($reg)) {
-                    $reg = '[^/]+';
+
+        $compliedPattern = [];
+        $attrNames = [];
+        foreach ($matched as $part) {
+            if (empty($part)) continue;
+            switch ($part[0]) {
+                case ':': {
+                    preg_match('#:(\w+)(?:\(([^()]*)\))?#', $part, $ruleCfg);
+                    $name = $ruleCfg[1];
+                    $reg = @$ruleCfg[2];
+                    if (empty($reg)) {
+                        $reg = '[^/]+';
+                    }
+                    $attrNames[] = $name;
+                    $compliedPattern[] = '(' . $reg . ')';
+                    break;
                 }
-                $parts[] = '(' . $reg . ')';
-            } else {
-                $parts[] = str_replace('.', '\.', $p);
+                case '(':
+                    preg_match('#\((.*)\)#', $part, $ruleCfg);
+                    $reg = $ruleCfg[1];
+                    if (empty($reg)) {
+                        $reg = '[^/]+';
+                    }
+                    $compliedPattern[] = $reg;
+                    break;
+                default:
+                    $part = str_replace('.', '\.', $part);
+                    $compliedPattern[] = str_replace('*', '[^/]+', $part);
             }
         }
-        $this->pattern = $pattern = '#^' . implode('', $parts) . '#' . $this->modifiers;
-        $this->attrNames = $attrs;
+
+        $this->pattern = $pattern = '#^' . implode('', $compliedPattern) . '#' . $this->modifiers;
+        $this->attrNames = $attrNames;
         return $this->pattern;
     }
 }

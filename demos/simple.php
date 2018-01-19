@@ -8,22 +8,28 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use York8\Router\Handler\CallbackHandler;
 use York8\Router\Router;
 
 include __DIR__ . '/../vendor/autoload.php';
 
-// create request handler
-$handler = new CallbackHandler(function (ServerRequestInterface $request, ResponseInterface $response) {
-    $username = $request->getAttribute('username');
+// build the router rules
+$router = new Router(function (ServerRequestInterface $request, ResponseInterface $response) {
+    $response = $response->withStatus(404);
     $body = $response->getBody();
-    $body->write("Hello, $username!");
+    $body->write('Not Found: ' . $request->getUri()->getPath());
     return $response;
 });
 
-// build the router rules
-$router = new Router();
-$router->get('/account/:username()', $handler);
+// define the route rules
+$router->get(
+    '/account/:username$',
+    function (ServerRequestInterface $request, ResponseInterface $response) {
+        $username = $request->getAttribute('username');
+        $body = $response->getBody();
+        $body->write("Hello, $username!");
+        return $response;
+    }
+);
 
 // initialize the request
 $request = ServerRequest::fromGlobals();
@@ -43,4 +49,4 @@ foreach ($attrs as $attrName => $attrValue) {
 }
 
 // handle the request
-$response = $handler->handle($request, $response);
+$response = $handler($request, $response);

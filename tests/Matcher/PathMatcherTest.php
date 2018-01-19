@@ -73,6 +73,18 @@ class PathMatcherTest extends TestCase
                 ],
             ],
             [
+                '', ['/foo$'], false,
+                // 成功样本
+                [
+                    ['/foo'],
+                ],
+                // 失败样本
+                [
+                    ['/foo/bar'],
+                    ['/Foo/'],
+                ],
+            ],
+            [
                 '/foo', ['/:a(\\d+)/bar/:b(\\d+)-:c(\\d+)'], false,
                 // 成功样本
                 [

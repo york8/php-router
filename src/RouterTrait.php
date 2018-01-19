@@ -7,6 +7,7 @@
 namespace York8\Router;
 
 use UnexpectedValueException;
+use York8\Router\Handler\CallbackHandler;
 
 trait RouterTrait
 {
@@ -16,14 +17,15 @@ trait RouterTrait
     /**
      * 添加规则：将规则 rule 与 处理器 handler 绑定起来
      * @param RulerInterface $ruler 规则对象
-     * @param HandlerInterface $handler 处理器对象
+     * @param callable $handler 处理器对象
      * @return RouterInterface
      */
-    public function addRuler(RulerInterface $ruler, HandlerInterface $handler): RouterInterface
+    public function addRuler(RulerInterface $ruler, callable $handler): RouterInterface
     {
         if (is_null($ruler) || is_null($handler)) {
             throw new UnexpectedValueException('the ruler and handler could not be null');
         }
+        $handler = $this->wrapHandler($handler);
         foreach ($this->rulerHandlerMap as $item) {
             $r = $item[0];
             if ($r === $ruler) {
@@ -38,10 +40,10 @@ trait RouterTrait
     /**
      * 路由 GET 请求 $path 到 $handler
      * @param string $path
-     * @param HandlerInterface $handler
+     * @param callable $handler
      * @return RouterInterface
      */
-    public function get($path, HandlerInterface $handler): RouterInterface
+    public function get($path, callable $handler): RouterInterface
     {
         $ruler = $this->createRuler('GET', $path);
         return $this->addRuler($ruler, $handler);
@@ -50,10 +52,10 @@ trait RouterTrait
     /**
      * 路由 POST 请求 $path 到 $handler
      * @param string $path
-     * @param HandlerInterface $handler
+     * @param callable $handler
      * @return RouterInterface
      */
-    public function post($path, HandlerInterface $handler): RouterInterface
+    public function post($path, callable $handler): RouterInterface
     {
         $ruler = $this->createRuler('POST', $path);
         return $this->addRuler($ruler, $handler);
@@ -62,10 +64,10 @@ trait RouterTrait
     /**
      * 路由 PUT 请求 $path 到 $handler
      * @param string $path
-     * @param HandlerInterface $handler
+     * @param callable $handler
      * @return RouterInterface
      */
-    public function put($path, HandlerInterface $handler): RouterInterface
+    public function put($path, callable $handler): RouterInterface
     {
         $ruler = $this->createRuler('PUT', $path);
         return $this->addRuler($ruler, $handler);
@@ -74,10 +76,10 @@ trait RouterTrait
     /**
      * 路由 HEAD 请求 $path 到 $handler
      * @param string $path
-     * @param HandlerInterface $handler
+     * @param callable $handler
      * @return RouterInterface
      */
-    public function head($path, HandlerInterface $handler): RouterInterface
+    public function head($path, callable $handler): RouterInterface
     {
         $ruler = $this->createRuler('HEAD', $path);
         return $this->addRuler($ruler, $handler);
@@ -86,10 +88,10 @@ trait RouterTrait
     /**
      * 路由 OPTION 请求 $path 到 $handler
      * @param string $path
-     * @param HandlerInterface $handler
+     * @param callable $handler
      * @return RouterInterface
      */
-    public function option($path, HandlerInterface $handler): RouterInterface
+    public function option($path, callable $handler): RouterInterface
     {
         $ruler = $this->createRuler('OPTION', $path);
         return $this->addRuler($ruler, $handler);
@@ -98,10 +100,10 @@ trait RouterTrait
     /**
      * 路由 DELETE 请求 $path 到 $handler
      * @param string $path
-     * @param HandlerInterface $handler
+     * @param callable $handler
      * @return RouterInterface
      */
-    public function delete($path, HandlerInterface $handler): RouterInterface
+    public function delete($path, callable $handler): RouterInterface
     {
         $ruler = $this->createRuler('DELETE', $path);
         return $this->addRuler($ruler, $handler);
@@ -122,5 +124,18 @@ trait RouterTrait
             $paths = [$paths];
         }
         return new Ruler($paths, null, $methods);
+    }
+
+    /**
+     * 将 handler 包装成 HandlerInterface 对象
+     * @param callable $handler
+     * @return callable
+     */
+    private function wrapHandler(callable $handler): callable
+    {
+        if (!is_object($handler)) {
+            $handler = new CallbackHandler($handler);
+        }
+        return $handler;
     }
 }

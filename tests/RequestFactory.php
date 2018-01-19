@@ -24,9 +24,18 @@ class RequestFactory implements \Iterator
      * @var mixed[][]
      */
     private $requestParams = [
-        ['www.york8.com', 'get', '', []],
-        ['www.york8.org', 'get', '', []],
-        ['github.com', 'get', '/york8', []],
+        ['www.york8.com', 'get', '', [
+            'Host' => 'www.york8.com',
+            'Content-Type' => 'text/html; charset=utf8',
+        ]],
+        ['www.york8.org', 'get', '', [
+            'Host' => 'www.york8.com',
+            'Content-Type' => 'application/json; charset=utf8',
+        ]],
+        ['github.com', 'get', '/york8', [
+            'Host' => 'github.com',
+            'Content-Type' => 'text/plain; charset=utf8',
+        ]],
     ];
 
     public function __construct(array $requests = null)
