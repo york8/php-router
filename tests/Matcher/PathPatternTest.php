@@ -56,6 +56,18 @@ class PathPatternTest extends TestCase
                 ],
             ],
             [
+                '/foo$', 'i',
+                // 成功样本
+                [
+                    ['/foo'],
+                    ['/Foo'],
+                ],
+                // 失败样本
+                [
+                    ['/foo/bar'],
+                ],
+            ],
+            [
                 '/foo', '',
                 // 成功样本
                 [

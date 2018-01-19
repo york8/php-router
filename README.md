@@ -9,7 +9,8 @@
 
 * 基于 [PSR 7](http://www.php-fig.org/psr/psr-7/) HTTP 消息接口
 * 面向接口编程，灵活扩展
-* 支持
+* RESTful 风格路由
+* PCRE 正则匹配
 
 ### Authors
 
@@ -24,19 +25,13 @@ $ composer require york8/router
 
 #### How to use：
 
-##### 1. 创建请求处理器
+##### 1. 创建带默认路由失败处理器的路由器对象，
 ```php
-$handler = new CallbackHandler(...);
+$router = new Router(function notFound() { ... });
 ```
-通过实现 **[HandlerInterface](src/HandlerInterface.php)** 接口来实现自己的处理器。
-
-[这里](src/Handler)提供了几个简单的实现：
-* [Callback](src/Handler/CallbackHandler.php)处理器：用户可以通过直接传递回调函数来创建处理器对象，不需要实现接口就可以直接使用
-* [NotFound](src/Handler/NotFoundHandler.php)处理器：路由失败时返回的默认处理器
 
 ##### 2. 构建路由规则，将规则与处理器关联起来
 ```php
-$router = new Router();
 $router->get(...);
 $router->post(...);
 $router->put(...);
@@ -54,6 +49,61 @@ $router->addRuler(...);
 * [Host](src/Matcher/HostMatcher.php)匹配器：用来匹配请求头 Host
 * [Method](src/Matcher/MethodMatcher.php)匹配器：用来匹配请求方法
 * [Path](src/Matcher/PathMatcher.php)匹配器：路径匹配器，用来匹配请求路径
+
+路径匹配器支持正则匹配，定义如下：
+```php
+class PathMatcher implements MatcherInterface
+    /**
+     * @param \string[] $paths 需要匹配的路径列表，路径规则如下：
+     * <p> /path/to/target
+     * <p> /path/to/(pattern)/target 括号内为正则表达式
+     * <p> /path/:attr1(pattern)/to/:attr2(pattern) 命名的正则表达式，匹配到值将设置到请求对象的 attributes 中
+     * @param string $prefix
+     * @param bool $isCaseSensitive 是否匹配大小写，默认忽略大小写
+     */
+    public function __construct(array $paths, $prefix = null, bool $isCaseSensitive = false)
+    {
+        // ...
+    }
+
+    /**
+     * @param string $path
+     * @param string[]|null $attrs
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public function match($path, array &$attrs = null): bool
+    {
+        // ...
+    }
+
+    // ...
+}
+```
+
+使用说明：
+1. 正则表达式必须使用圆括号括起来“**(patther)**”，括号内的内容可以为空，表示匹配任意字符
+2. 命名正则表达式，冒号开头，形如"**:name**"开始的单词命名紧跟的正则表达式，路径匹配成功后，
+   命名正则匹配到的路径值将返回给属性结果，可以通过 attrs[name] 捕获
+3. 路径默认是前缀匹配的，可以在路径末尾添加 "$" 来变成全路径匹配，如 "/foo" 可以匹配 "/foo/bar"，但 "/foo$" 则不能能匹配 "/foo/bar"
+
+格式示例如下：
+```
+/path/to/foo
+```
+普通路径前缀匹配；
+```
+path/to/(\\w+)
+```
+非命名的正则表达式，不捕获任何路径值；
+```
+/path/to/:name/list
+```
+使用命名的空正则表达式，将捕获到路径中的某一节并将其赋值给 "name" 属性，通过 attrs 返回；
+```
+/paht/to/:foo(\\w+)-:bar(\\d+)/account/:name
+```
+使用命名的表达式，捕获匹配到的路径值并赋值给 "foo"、"bar" 和 "name" 属性，通过 attrs 返回。
 
 ##### 3. 初始化请求和响应对象
 使用实现了 [PSR 7](http://www.php-fig.org/psr/psr-7/) 规范的第三方库来初始化构建请求对象和响应对象，如：
@@ -75,17 +125,24 @@ $response = $handler->handle($request, $response);
 
 #### An Example Route
 ```php
-// 1. create request handler
-$handler = new CallbackHandler(function (ServerRequestInterface $request, ResponseInterface $response) {
-    $username = $request->getAttribute('username');
+
+// 1. create Router with default not found handler
+$router = new Router(function (ServerRequestInterface $request, ResponseInterface $response) {
+    $response = $response->withStatus(404);
     $body = $response->getBody();
-    $body->write("Hello, $username!");
+    $body->write('Not Found: ' . $request->getUri()->getPath());
     return $response;
 });
-
 // 2. build the router rules
-$router = new Router();
-$router->get('/account/:username()', $handler);
+$router->get(
+    '/account/:username',
+    function (ServerRequestInterface $request, ResponseInterface $response) {
+        $username = $request->getAttribute('username');
+        $body = $response->getBody();
+        $body->write("Hello, $username!");
+        return $response;
+    }
+);
 
 // 3. initialize the request
 $request = ServerRequest::fromGlobals();
