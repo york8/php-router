@@ -25,7 +25,6 @@ trait RouterTrait
         if (is_null($ruler) || is_null($handler)) {
             throw new UnexpectedValueException('the ruler and handler could not be null');
         }
-        $handler = $this->wrapHandler($handler);
         foreach ($this->rulerHandlerMap as $item) {
             $r = $item[0];
             if ($r === $ruler) {
@@ -124,18 +123,5 @@ trait RouterTrait
             $paths = [$paths];
         }
         return new Ruler($paths, null, $methods);
-    }
-
-    /**
-     * 将 handler 包装成 HandlerInterface 对象
-     * @param callable $handler
-     * @return callable
-     */
-    private function wrapHandler(callable $handler): callable
-    {
-        if (!is_object($handler)) {
-            $handler = new CallbackHandler($handler);
-        }
-        return $handler;
     }
 }
