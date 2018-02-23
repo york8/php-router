@@ -4,7 +4,7 @@
   "homepage": "https://github.com/york8/php-router",
   "type": "library",
   "license": "MIT",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "York",
